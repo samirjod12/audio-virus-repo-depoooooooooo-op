@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sopotify</title>
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
 <style>
   :root{
     --bg:#0b0b0d; --panel:#141417; --panel2:#1c1c21; --line:#26262d;
@@ -21,10 +22,10 @@
   nav a{display:block;padding:10px 12px;border-radius:8px;color:var(--muted);font-weight:600;text-decoration:none}
   nav a.on{color:var(--text);background:var(--panel2)}
   .side-foot{margin-top:auto;color:var(--muted);font-size:12px;line-height:1.5}
-  main{background:linear-gradient(180deg,#26402f 0,var(--panel) 320px);border-radius:12px;overflow:auto;min-height:0}
+  main{background:linear-gradient(180deg,#0000 0,var(--panel) 380px),url(img/banner.svg) top/100% 380px no-repeat,var(--panel);border-radius:12px;overflow:auto;min-height:0}
   .hero{display:flex;gap:24px;align-items:flex-end;padding:40px 32px 24px}
-  .cover{width:190px;height:190px;border-radius:8px;flex:none;box-shadow:0 12px 40px #0008;background:linear-gradient(135deg,#1ed760,#0b6b30 60%,#093d1d);display:grid;place-items:center}
-  .cover svg{width:80px;height:80px;fill:#fff;opacity:.9}
+  .cover{width:190px;height:190px;border-radius:8px;flex:none;background:none}
+  .cover img{width:100%;height:100%;border-radius:8px;display:block}
   .hero small{text-transform:uppercase;font-size:12px;font-weight:700;letter-spacing:.08em}
   .hero h1{font-size:clamp(34px,6vw,72px);letter-spacing:-.04em;line-height:1;margin:8px 0 12px}
   .hero p{color:var(--muted);font-size:14px}
@@ -88,14 +89,14 @@
 <body>
 <div class="app">
   <aside>
-    <div class="logo"><i><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></i>Sopotify</div>
+    <div class="logo"><img src="img/logo.svg" alt="" width="30" height="30">Sopotify</div>
     <nav><a class="on" href="#">Home</a><a href="#">Your Library</a></nav>
     <div class="side-foot">My songs. Press <b>Space</b> to play/pause, <b>←</b> / <b>→</b> to skip 5s.</div>
   </aside>
 
   <main>
     <section class="hero">
-      <div class="cover"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13h-2V6.3L11 7.6V18a3 3 0 1 1-2-2.8z"/></svg></div>
+      <div class="cover"><img src="img/logo.svg" alt="Sopotify logo"></div>
       <div>
         <small>Playlist</small>
         <h1>My Songs</h1>
@@ -134,24 +135,24 @@
 
 <script>
 const SONGS = [
-  { title:"Krishi Kaje Biggan",        file:"songs/krishi-kaje-biggan.mp3",        hue:140 },
-  { title:"Sonar Tori Sad",            file:"songs/sonar-tori-sad.mp3",            hue:215 },
-  { title:"Sonartori Rapper Robindro", file:"songs/sonartori-rapper-robindro.mp3", hue:30  },
-  { title:"Prakritik Poribesh",        file:"songs/prakritik-poribesh.mp3",        hue:170 }
+  { title:"Krishi Kaje Biggan",        file:"songs/krishi-kaje-biggan.mp3",        hue:140, art:"img/krishi.svg" },
+  { title:"Sonar Tori Sad",            file:"songs/sonar-tori-sad.mp3",            hue:215, art:"img/sonar-tori.svg" },
+  { title:"Sonartori Rapper Robindro", file:"songs/sonartori-rapper-robindro.mp3", hue:30,  art:"img/rapper.svg" },
+  { title:"Prakritik Poribesh",        file:"songs/prakritik-poribesh.mp3",        hue:170, art:"img/prokriti.svg" }
 ];
 const $ = id => document.getElementById(id);
 const au = $('au'), list = $('list');
 let idx = -1, shuffle = false, repeat = false;
 
 const fmt = s => isFinite(s) ? Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,'0') : "0:00";
-const grad = h => `linear-gradient(135deg,hsl(${h} 70% 45%),hsl(${(h+50)%360} 70% 25%))`;
+const art = s => `url(${s.art}) center/cover`;
 const PLAY = '<path d="M7 4v16l14-8z"/>', PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
 
 SONGS.forEach((s,i)=>{
   const r = document.createElement('div');
   r.className = 'row';
   r.innerHTML = `<div class="n"><span class="num">${i+1}</span><span class="eq"><b></b><b></b><b></b></span></div>
-    <div class="t"><div class="art" style="background:${grad(s.hue)}"></div><div style="min-width:0"><div class="name">${s.title}</div><div class="sub">My Songs</div></div></div>
+    <div class="t"><div class="art" style="background:${art(s)}"></div><div style="min-width:0"><div class="name">${s.title}</div><div class="sub">My Songs</div></div></div>
     <div class="d" id="d${i}">–:––</div>`;
   r.onclick = () => (i===idx ? toggle() : load(i, true));
   list.appendChild(r);
@@ -169,7 +170,7 @@ function load(i, autoplay){
   idx = i; const s = SONGS[i];
   au.src = s.file;
   $('nName').textContent = s.title; $('nSub').textContent = "My Songs";
-  $('nArt').style.background = grad(s.hue);
+  $('nArt').style.background = art(s);
   document.title = s.title+" · Sopotify";
   [...list.querySelectorAll('.row:not(.head)')].forEach((r,k)=>r.classList.toggle('cur',k===i));
   if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({title:s.title,artist:"My Songs"});
